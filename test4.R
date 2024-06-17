@@ -60,8 +60,7 @@ ui <- dashboardPage(
             tags$h3("Navigation Panel", style = "margin-top: 0;")),
     sidebarMenu(
       menuItem("Attendance Metrics", tabName = "metrics", icon = icon("dashboard")),
-      menuItem("Data View", tabName = "dataView", icon = icon("table")),
-      menuItem("Settings", tabName = "settings", icon = icon("sliders-h"))  # Placeholder for potential settings tab
+      menuItem("Data View", tabName = "dataView", icon = icon("table"))
     ),
     tags$div(class = "sidebar-footer", style = "position: absolute; bottom: 0; width: 100%; padding: 10px; text-align: center; background-color: #007bff; color: #fff; font-size: 8px;",
              "Powered by Tech and Research Department",
@@ -102,18 +101,14 @@ ui <- dashboardPage(
               )
       ),
       tabItem(tabName = "dataView",
-              box(title = "Interactive Data View", status = "primary", solidHeader = TRUE, collapsible = TRUE, width = NULL,
+              box(title = "Attendance Data", status = "primary", solidHeader = TRUE, collapsible = TRUE, width = NULL,
                   DTOutput("dataTable", width = "100%")))
-      ),
-      tabItem(tabName = "settings",
-              h2("Settings Panel"),  # Example content for a settings tab
-              p("Configure your dashboard parameters here.")
       ),
     div(class = "body-footer", "© 2024 Dashboard - All Rights Reserved")  # Body Footer
   ),
-  
   title = "Dashboard",
-  skin = "blue",controlbar = dashboardControlbar(  # Adding a control bar for extra settings or information
+  skin = "blue",
+  controlbar = dashboardControlbar(  # Adding a control bar for extra settings or information
     controlbarMenu(
       id = "controlbar_menu",
       controlbarItem("Adjustments", icon = icon("tools"),
@@ -125,13 +120,20 @@ ui <- dashboardPage(
 )
 server <- function(input, output) {
   output$dataTable <- renderDT({
-    datatable(Data, options = list(
-      dom = 'Bfrtip',  # Allows for buttons, searching, pagination
-      buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),  # Export options
-      autoWidth = TRUE,
-      responsive = TRUE,
-      paging = TRUE,
-      searchHighlight = TRUE  # Highlights search terms
+    datatable(Data,
+              options = list(
+              initComplete = JS(
+                "function(settings, json) {",
+                "$(this.api().table().header()).css({'background-color': '#007bff', 'color': '#ffffff'});",
+                "}"
+              ),
+              dom = 'Bfrtip',  # Allows for buttons, searching, pagination
+              buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),  # Export options
+              autoWidth = TRUE,
+              responsive = TRUE,
+              paging = TRUE,
+              scrollX = TRUE,
+              searchHighlight = TRUE  # Highlights search terms
     ))
   }, server = FALSE)  # Non-server side processing for interactive features
   
